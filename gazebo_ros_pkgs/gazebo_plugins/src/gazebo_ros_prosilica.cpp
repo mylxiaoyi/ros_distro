@@ -131,7 +131,7 @@ void GazeboRosProsilica::OnNewImageFrame(const unsigned char *_image,
 
   // should do nothing except turning camera on/off, as we are using service.
   /// @todo: consider adding thumbnailing feature here if subscribed.
-  common::Time sensor_update_time = this->parentSensor_->LastUpdateTime();
+  common::Time sensor_update_time = this->parentSensor_->GetLastUpdateTime();
 
   // as long as ros is connected, parent is active
   //ROS_ERROR("debug image count %d",this->image_connect_count_);
@@ -209,7 +209,7 @@ void GazeboRosProsilica::pollCallback(polled_camera::GetPolledImage::Request& re
   {
     {
       // Get a pointer to image data
-      src = this->parentSensor->Camera()->ImageData(0);
+      src = this->parentSensor->GetCamera()->GetImageData(0);
 
       if (src)
       {
@@ -218,7 +218,7 @@ void GazeboRosProsilica::pollCallback(polled_camera::GetPolledImage::Request& re
         this->roiCameraInfoMsg = &info;
         this->roiCameraInfoMsg->header.frame_id = this->frame_name_;
 
-        common::Time roiLastRenderTime = this->parentSensor_->LastUpdateTime();
+        common::Time roiLastRenderTime = this->parentSensor_->GetLastUpdateTime();
         this->roiCameraInfoMsg->header.stamp.sec = roiLastRenderTime.sec;
         this->roiCameraInfoMsg->header.stamp.nsec = roiLastRenderTime.nsec;
 
@@ -272,7 +272,7 @@ void GazeboRosProsilica::pollCallback(polled_camera::GetPolledImage::Request& re
         // copy data into image_msg_, then convert to roiImageMsg(image)
         this->image_msg_.header.frame_id    = this->frame_name_;
 
-        common::Time lastRenderTime = this->parentSensor_->LastUpdateTime();
+        common::Time lastRenderTime = this->parentSensor_->GetLastUpdateTime();
         this->image_msg_.header.stamp.sec = lastRenderTime.sec;
         this->image_msg_.header.stamp.nsec = lastRenderTime.nsec;
 
@@ -296,7 +296,7 @@ void GazeboRosProsilica::pollCallback(polled_camera::GetPolledImage::Request& re
           // copy data into ROI image
           this->roiImageMsg = &image;
           this->roiImageMsg->header.frame_id = this->frame_name_;
-          common::Time roiLastRenderTime = this->parentSensor_->LastUpdateTime();
+          common::Time roiLastRenderTime = this->parentSensor_->GetLastUpdateTime();
           this->roiImageMsg->header.stamp.sec = roiLastRenderTime.sec;
           this->roiImageMsg->header.stamp.nsec = roiLastRenderTime.nsec;
 

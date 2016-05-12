@@ -76,7 +76,7 @@ void GazeboRosCamera::OnNewFrame(const unsigned char *_image,
     unsigned int _width, unsigned int _height, unsigned int _depth,
     const std::string &_format)
 {
-  this->sensor_update_time_ = this->parentSensor_->LastUpdateTime();
+  this->sensor_update_time_ = this->parentSensor_->GetLastUpdateTime();
 
   if (!this->parentSensor->IsActive())
   {
