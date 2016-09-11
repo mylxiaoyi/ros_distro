@@ -4,6 +4,8 @@ project(collada_urdf)
 find_package(catkin REQUIRED COMPONENTS angles collada_parser resource_retriever urdf geometric_shapes tf cmake_modules)
 
 find_package(TinyXML REQUIRED)
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 catkin_package(
   LIBRARIES ${PROJECT_NAME}

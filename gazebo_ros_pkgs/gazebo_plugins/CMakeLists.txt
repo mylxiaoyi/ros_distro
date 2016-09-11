@@ -41,6 +41,7 @@ endif()
 find_package(gazebo REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT")
 
 execute_process(COMMAND
   pkg-config --variable=plugindir OGRE

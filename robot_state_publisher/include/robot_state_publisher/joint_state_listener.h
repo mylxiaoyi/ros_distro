@@ -48,7 +48,7 @@ using namespace ros;
 using namespace KDL;
 
 typedef boost::shared_ptr<sensor_msgs::JointState const> JointStateConstPtr;
-typedef std::map<std::string, boost::shared_ptr<urdf::JointMimic> > MimicMap;
+typedef std::map<std::string, std::shared_ptr<urdf::JointMimic> > MimicMap;
 
 namespace robot_state_publisher{
 

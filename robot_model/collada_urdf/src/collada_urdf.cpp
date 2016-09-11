@@ -544,7 +544,7 @@ private:
         domInstance_with_extraRef piscene;
     };
 
-    typedef std::map< boost::shared_ptr<const urdf::Link>, urdf::Pose > MAPLINKPOSES;
+    typedef std::map< std::shared_ptr<const urdf::Link>, urdf::Pose > MAPLINKPOSES;
     struct LINKOUTPUT
     {
         list<pair<int,string> > listusedlinks;
@@ -568,7 +568,7 @@ private:
             axis_output() : iaxis(0) {
             }
             string sid, nodesid;
-            boost::shared_ptr<const urdf::Joint> pjoint;
+            std::shared_ptr<const urdf::Joint> pjoint;
             int iaxis;
             string jointnodesid;
         };
@@ -589,7 +589,7 @@ private:
     {
         domInstance_kinematics_modelRef ikm;
         std::vector<axis_sids> vaxissids;
-        boost::shared_ptr<kinematics_model_output> kmout;
+        std::shared_ptr<kinematics_model_output> kmout;
         std::vector<std::pair<std::string,std::string> > vkinematicsbindings;
     };
 
@@ -794,7 +794,7 @@ protected:
 
         for(size_t idof = 0; idof < _ikmout->vaxissids.size(); ++idof) {
             string axis_infosid = _ComputeId(str(boost::format("axis_info_inst%d")%idof));
-            boost::shared_ptr<const urdf::Joint> pjoint = _ikmout->kmout->vaxissids.at(idof).pjoint;
+            std::shared_ptr<const urdf::Joint> pjoint = _ikmout->kmout->vaxissids.at(idof).pjoint;
             BOOST_ASSERT(_mapjointindices[pjoint] == (int)idof);
             //int iaxis = _ikmout->kmout->vaxissids.at(idof).iaxis;
 
@@ -881,7 +881,7 @@ protected:
     virtual void _WriteInstance_kinematics_model(daeElementRef parent, const string& sidscope, int id)
     {
         ROS_DEBUG_STREAM(str(boost::format("writing instance_kinematics_model %s\n")%_robot.getName()));
-        boost::shared_ptr<kinematics_model_output> kmout = WriteKinematics_model(id);
+        std::shared_ptr<kinematics_model_output> kmout = WriteKinematics_model(id);
 
         _ikmout.reset(new instance_kinematics_model_output());
         _ikmout->kmout = kmout;
@@ -931,7 +931,7 @@ protected:
         }
     }
 
-    virtual boost::shared_ptr<kinematics_model_output> WriteKinematics_model(int id)
+    virtual std::shared_ptr<kinematics_model_output> WriteKinematics_model(int id)
     {
         domKinematics_modelRef kmodel = daeSafeCast<domKinematics_model>(_kinematicsModelsLib->add(COLLADA_ELEMENT_KINEMATICS_MODEL));
         string kmodelid = _ComputeKinematics_modelId(id);
@@ -966,13 +966,13 @@ protected:
 
         double lmin, lmax;
         vector<domJointRef> vdomjoints(_robot.joints_.size());
-        boost::shared_ptr<kinematics_model_output> kmout(new kinematics_model_output());
+        std::shared_ptr<kinematics_model_output> kmout(new kinematics_model_output());
         kmout->kmodel = kmodel;
         kmout->vaxissids.resize(_robot.joints_.size());
         kmout->vlinksids.resize(_robot.links_.size());
 
         FOREACHC(itjoint, _robot.joints_) {
-            boost::shared_ptr<urdf::Joint> pjoint = itjoint->second;
+            std::shared_ptr<urdf::Joint> pjoint = itjoint->second;
             int index = _mapjointindices[itjoint->second];
             domJointRef pdomjoint = daeSafeCast<domJoint>(ktec->add(COLLADA_ELEMENT_JOINT));
             string jointid = _ComputeId(pjoint->name); //str(boost::format("joint%d")%index);
@@ -1045,7 +1045,7 @@ protected:
         // create the formulas for all mimic joints
         FOREACHC(itjoint, _robot.joints_) {
             string jointsid = _ComputeId(itjoint->second->name);
-            boost::shared_ptr<urdf::Joint> pjoint = itjoint->second;
+            std::shared_ptr<urdf::Joint> pjoint = itjoint->second;
             if( !pjoint->mimic ) {
                 continue;
             }
@@ -1131,7 +1131,7 @@ protected:
     /// \param pkinparent Kinbody parent
     /// \param pnodeparent Node parent
     /// \param strModelUri
-    virtual LINKOUTPUT _WriteLink(boost::shared_ptr<const urdf::Link> plink, daeElementRef pkinparent, domNodeRef pnodeparent, const string& strModelUri)
+    virtual LINKOUTPUT _WriteLink(std::shared_ptr<const urdf::Link> plink, daeElementRef pkinparent, domNodeRef pnodeparent, const string& strModelUri)
     {
         LINKOUTPUT out;
         int linkindex = _maplinkindices[plink];
@@ -1147,8 +1147,8 @@ protected:
         pnode->setSid(nodesid.c_str());
         pnode->setName(plink->name.c_str());
 
-        boost::shared_ptr<urdf::Geometry> geometry;
-        boost::shared_ptr<urdf::Material> material;
+        std::shared_ptr<urdf::Geometry> geometry;
+        std::shared_ptr<urdf::Material> material;
         urdf::Pose geometry_origin;
         if( !!plink->visual ) {
             geometry = plink->visual->geometry;
@@ -1167,7 +1167,7 @@ protected:
             if ( !!plink->visual ) {
               if (plink->visual_array.size() > 1) {
 		int igeom = 0;
-		for (std::vector<boost::shared_ptr<urdf::Visual > >::const_iterator it = plink->visual_array.begin();
+        for (std::vector<std::shared_ptr<urdf::Visual > >::const_iterator it = plink->visual_array.begin();
 		     it != plink->visual_array.end(); it++) {
 		  // geom
 		  string geomid = _ComputeId(str(boost::format("g%s_%s_geom%d")%strModelUri%linksid%igeom));
@@ -1214,7 +1214,7 @@ protected:
 
         // process all children
         FOREACHC(itjoint, plink->child_joints) {
-            boost::shared_ptr<urdf::Joint> pjoint = *itjoint;
+            std::shared_ptr<urdf::Joint> pjoint = *itjoint;
             int index = _mapjointindices[pjoint];
 
             // <attachment_full joint="k1/joint0">
@@ -1275,7 +1275,7 @@ protected:
         return out;
     }
 
-    domGeometryRef _WriteGeometry(boost::shared_ptr<urdf::Geometry> geometry, const std::string& geometry_id, urdf::Pose *org_trans = NULL)
+    domGeometryRef _WriteGeometry(std::shared_ptr<urdf::Geometry> geometry, const std::string& geometry_id, urdf::Pose *org_trans = NULL)
     {
         domGeometryRef cgeometry = daeSafeCast<domGeometry>(_geometriesLib->add(COLLADA_ELEMENT_GEOMETRY));
         cgeometry->setId(geometry_id.c_str());
@@ -1314,7 +1314,7 @@ protected:
         return cgeometry;
     }
 
-    void _WriteMaterial(const string& geometry_id, boost::shared_ptr<urdf::Material> material)
+    void _WriteMaterial(const string& geometry_id, std::shared_ptr<urdf::Material> material)
     {
         string effid = geometry_id+string("_eff");
         string matid = geometry_id+string("_mat");
@@ -1382,17 +1382,17 @@ protected:
     {
         boost::shared_ptr<physics_model_output> pmout(new physics_model_output());
         pmout->pmodel = daeSafeCast<domPhysics_model>(_physicsModelsLib->add(COLLADA_ELEMENT_PHYSICS_MODEL));
-        string pmodelid = str(boost::format("pmodel%d")%id);
+        string pmodelid = boost::str(boost::format("pmodel%d")%id);
         pmout->pmodel->setId(pmodelid.c_str());
         pmout->pmodel->setName(_robot.getName().c_str());
         FOREACHC(itlink,_robot.links_) {
             domRigid_bodyRef rigid_body = daeSafeCast<domRigid_body>(pmout->pmodel->add(COLLADA_ELEMENT_RIGID_BODY));
-            string rigidsid = str(boost::format("rigid%d")%_maplinkindices[itlink->second]);
+            string rigidsid = boost::str(boost::format("rigid%d")%_maplinkindices[itlink->second]);
             pmout->vrigidbodysids.push_back(rigidsid);
             rigid_body->setSid(rigidsid.c_str());
             rigid_body->setName(itlink->second->name.c_str());
             domRigid_body::domTechnique_commonRef ptec = daeSafeCast<domRigid_body::domTechnique_common>(rigid_body->add(COLLADA_ELEMENT_TECHNIQUE_COMMON));
-            boost::shared_ptr<urdf::Inertial> inertial = itlink->second->inertial;
+            std::shared_ptr<urdf::Inertial> inertial = itlink->second->inertial;
             if( !!inertial ) {
                 daeSafeCast<domRigid_body::domTechnique_common::domDynamic>(ptec->add(COLLADA_ELEMENT_DYNAMIC))->setValue(xsBoolean(true)); //!!inertial));
                 domTargetable_floatRef mass = daeSafeCast<domTargetable_float>(ptec->add(COLLADA_ELEMENT_MASS));
@@ -1922,9 +1922,9 @@ private:
 
     boost::shared_ptr<instance_kinematics_model_output> _ikmout;
     boost::shared_ptr<instance_articulated_system_output> _iasout;
-    std::map< boost::shared_ptr<const urdf::Joint>, int > _mapjointindices;
-    std::map< boost::shared_ptr<const urdf::Link>, int > _maplinkindices;
-    std::map< boost::shared_ptr<const urdf::Material>, int > _mapmaterialindices;
+    std::map< std::shared_ptr<const urdf::Joint>, int > _mapjointindices;
+    std::map< std::shared_ptr<const urdf::Link>, int > _maplinkindices;
+    std::map< std::shared_ptr<const urdf::Material>, int > _mapmaterialindices;
     Assimp::Importer _importer;
 };
 

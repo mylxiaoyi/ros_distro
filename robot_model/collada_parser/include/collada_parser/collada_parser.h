@@ -47,7 +47,7 @@
 namespace urdf {
 
 /// \brief Load Model from string
-boost::shared_ptr<ModelInterface> parseCollada(const std::string &xml_string );
+std::shared_ptr<ModelInterface> parseCollada(const std::string &xml_string );
 
 }
 
